@@ -1,6 +1,6 @@
 # GHZ-bench
 
-This is a simple benchmark created while studying different ways of optimization for x86 and e2k architechtures. It features the main loop of a program performing quantum mechanical calculations to evaluate noise properties of a quantum interferometer employing a cascade of GHZ states.
+This is a simple benchmark created while studying different ways of optimization for x86 and e2k architechtures. It features the main loop of a program evaluating noise properties of a quantum interferometer employing a cascade of GHZ states.
 
 ## Build
 
