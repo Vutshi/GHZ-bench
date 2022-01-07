@@ -12,4 +12,4 @@ Run
 
 ## About
 
-This program was created by [Denis Vasilyev](https://github.com/Vutshi) and someone who-must-not-be-named.
+This program was created by [Vutshi](https://github.com/Vutshi) and someone who-must-not-be-named.
