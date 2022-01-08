@@ -329,7 +329,6 @@ double test_unroll_SoA_split(double *Lexp, double *temp_ij_re,
     for (long l = 0; l < index_max - index_max % step3; l += step3) {
       long ll = 0;
 
-#if defined(__e2k__)
       // init tmp arrays
       for (long j = 0; j < step3; j++) {
 #if defined(__e2k__) && __iset__ > 4
@@ -352,7 +351,6 @@ double test_unroll_SoA_split(double *Lexp, double *temp_ij_re,
         }
       }
       ll += 1;
-#endif
 
       for (; ll <= l; ll++) {
         for (long j = 0; j < step3; j++) {
