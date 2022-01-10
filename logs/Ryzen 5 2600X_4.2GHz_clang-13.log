@@ -1,0 +1,23 @@
+index_max 682
+
+theory FLOP = 18808826400
+
+#1 Naive method
+time = 2.422333s
+GFLOPS = 7.764757
+168405814462.02954
+
+#2 Unroll step 6
+time = 1.897725s
+GFLOPS = 9.911250
+168405814462.02954
+
+#3 SoA, Unroll step 6
+time = 0.652301s
+GFLOPS = 28.834582
+168405814462.02954
+
+#4 SoA split, Unroll step 3
+time = 0.663713s
+GFLOPS = 28.338795
+168405814462.02963
