@@ -1,0 +1,17 @@
+Reconstructed log
+
+#1 Naive method
+time = 0.0s
+GFLOPS = 2.76000
+
+#2 Unroll step 6
+time = 0.0s
+GFLOPS = 3.88000
+
+#3 SoA, Unroll step 6
+time = 0.0s
+GFLOPS = 4.53000
+
+#4 SoA split, Unroll step 3
+time = 0.0s
+GFLOPS = 5.86000
