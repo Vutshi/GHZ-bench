@@ -16,7 +16,7 @@ Alternatively, one can compile as follows
 
 ```clang -Ofast -march=native ghz-bench.c -o ghz-bench```. 
 
-In some cases, it might be beneficial to point out the target architechture explicetly, e.g., `-march=icelake-server`. It is known that `gcc` does not generate efficent binary with this code, so `clang` is recommended on x86.
+In some cases, it might be beneficial to point out a target architechture explicetly, e.g., `-march=icelake-server`. It is known that `gcc` does not generate efficent binary with this code, so `clang` is recommended on x86.
 
 ## About
 
