@@ -6,18 +6,27 @@ import csv
 import argparse
 from glob import glob
 
-def load_tests():
+class Test:
+    def __init__(self, cpu, frequency, compiler):
+        self.cpu = cpu
+        self.frequency = frequency
+        self.compiler = compiler
+        self.naive = 0.0
+        self.unroll = 0.0
+        self.unroll_soa = 0.0
+        self.unroll_soa_split = 0.0
+
+def load_tests(sort=False):
     logs = glob('logs/*.log')
-    logs.sort()
     tests = []
     for path in logs:
         with open(path, 'r', encoding='utf-8') as f:
-            test = dict()
             components = os.path.basename(path)[:-4].split('_')
-            test['CPU'] = components[0]
+            cpu = components[0]
             freq = components[1]
-            test['Frequency'] = '{0} {1}'.format(freq[:-3], freq[-3:])
-            test['Compiler'] = components[2]
+            freq = '{0} {1}'.format(freq[:-3], freq[-3:])
+            compiler = components[2]
+            test = Test(cpu, freq, compiler)
             while True:
                 line = ''
                 while True:
@@ -28,17 +37,22 @@ def load_tests():
                     break
                 testid = line.split(' ')[0]
                 f.readline()
-                gflops = '%.2f' % float(f.readline().split('=')[1].strip())
+                gflops = float(f.readline().split('=')[1].strip())
                 f.readline()
                 if testid == '#1':
-                    test['Naive'] = gflops
+                    test.naive = gflops
                 elif testid == '#2':
-                    test['Unroll'] = gflops
+                    test.unroll = gflops
                 elif testid == '#3':
-                    test['Unroll+SoA'] = gflops
+                    test.unroll_soa = gflops
                 elif testid == '#4':
-                    test['Unroll+SoA+split'] = gflops
+                    test.unroll_soa_split = gflops
             tests.append(test)
+    if sort:
+        tests.sort(
+            key=lambda test: max(test.naive, test.unroll, test.unroll_soa, test.unroll_soa_split),
+            reverse=True
+        )
     return tests
 
 def print_csv(tests, outfile):
@@ -46,7 +60,15 @@ def print_csv(tests, outfile):
     writer = csv.DictWriter(outfile, fieldnames=fieldnames)
     writer.writeheader()
     for test in tests:
-        writer.writerow(test)
+        tmp = dict()
+        tmp['CPU'] = test.cpu
+        tmp['Frequency'] = test.frequency
+        tmp['Compiler'] = test.compiler
+        tmp['Naive'] = '%.2f' % test.naive
+        tmp['Unroll'] = '%.2f' % test.unroll
+        tmp['Unroll+SoA'] = '%.2f' % test.unroll_soa
+        tmp['Unroll+SoA+split'] = '%.2f' % test.unroll_soa_split
+        writer.writerow(tmp)
 
 def print_md(test, outfile):
     def p(*args, **kwargs):
@@ -72,13 +94,13 @@ def print_md(test, outfile):
     p('|-{0:-<16}:|'.format('-'))
 
     for test in tests:
-        p('| {0:<18} '.format(test['CPU']), end='')
-        p('| {0:>9} '.format(test['Frequency']), end='')
-        p('| {0:<18} '.format(test['Compiler']), end='')
-        p('| {0:>8} '.format(test['Naive']), end='')
-        p('| {0:>8} '.format(test['Unroll']), end='')
-        p('| {0:>10} '.format(test['Unroll+SoA']), end='')
-        p('| {0:>16} |'.format(test['Unroll+SoA+split']))
+        p('| {0:<18} '.format(test.cpu), end='')
+        p('| {0:>9} '.format(test.frequency), end='')
+        p('| {0:<18} '.format(test.compiler), end='')
+        p('| {0:>8} '.format('%.2f' % test.naive), end='')
+        p('| {0:>8} '.format('%.2f' % test.unroll), end='')
+        p('| {0:>10} '.format('%.2f' % test.unroll_soa), end='')
+        p('| {0:>16} |'.format('%.2f' % test.unroll_soa_split))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process logs and generate table')
@@ -87,8 +109,10 @@ if __name__ == '__main__':
     parser.add_argument('--csv', dest='print', action='store_const',
                         const=print_csv, default=print_md,
                         help='Output CSV (default: Markdown)')
+    parser.add_argument('--no-sort', dest='sort', action='store_false',
+                        help='Sort by GFLOPS')
     args = parser.parse_args()
-    tests = load_tests()
+    tests = load_tests(args.sort)
     if args.file:
         with open(args.file, 'w', newline='') as outfile:
             args.print(tests, outfile)
