@@ -1,5 +1,5 @@
 CFLAGS := -march=native -Ofast
-LDFLAGS := -lm
+LIBS := -lm
 
 ifeq ($(shell arch), e2k)
 CFLAGS += -ffast
@@ -17,3 +17,4 @@ clean:
 	$(RM) $(NAME) $(OBJECTS)
 
 $(NAME): $(OBJECTS)
+	$(CC) $(LDFLAGS) -o $@ $^ $(LIBS)
